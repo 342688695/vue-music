@@ -67,8 +67,10 @@ export default {
   },
   methods: {
     selectItem(item) {
-      console.log(item)
-      this.$emit('select', item)
+      // this.$emit('select', item)
+      this.$router.push({
+        path:'/recommend'
+      })
     },
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
