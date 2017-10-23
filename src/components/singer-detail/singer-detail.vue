@@ -1,9 +1,7 @@
 <template>
-<transition name="slide">
-<div class="singer-detail">
-</div>
-</transition>
-  
+  <transition name="slide">
+    <div class="singer-detail">当前歌手的ID：{{$route.params.id}}</div>
+  </transition>
 </template>
 <script>
 export default {
@@ -12,7 +10,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
   @import '~common/stylus/variable';
-  .singer-detail 
+  .singer-detail
     position: fixed
     z-index: 100
     top: 0
