@@ -1,6 +1,7 @@
 <template>
   <div class="singer">
-    <ListView :data="singers"></ListView>
+    <ListView :data="singers"  @select="selectSinger"></ListView>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -21,8 +22,13 @@ export default {
     this._getSingerList()
   },
   methods: {
+    selectSinger(singer) {
+      this.$router.push({
+        path: `/singer/${singer.id}`
+      })
+    },
     _getSingerList() {
-      getSingerList().then((res) => {
+      getSingerList().then(res => {
         if (res.code === ERR_OK) {
           this.singers = this._normalizeSinger(res.data.list)
         }
@@ -37,10 +43,12 @@ export default {
       }
       list.forEach((item, index) => {
         if (index < HOT_SINGER_LEN) {
-          map.hot.items.push(new Singer({
-            name: item.Fsinger_name,
-            id: item.Fsinger_mid
-          }))
+          map.hot.items.push(
+            new Singer({
+              name: item.Fsinger_name,
+              id: item.Fsinger_mid
+            })
+          )
         }
         const key = item.Findex
         if (!map[key]) {
@@ -49,10 +57,12 @@ export default {
             items: []
           }
         }
-        map[key].items.push(new Singer({
-          name: item.Fsinger_name,
-          id: item.Fsinger_mid
-        }))
+        map[key].items.push(
+          new Singer({
+            name: item.Fsinger_name,
+            id: item.Fsinger_mid
+          })
+        )
       })
       // 为了得到有序列表，我们需要处理 map
       let ret = []
@@ -77,10 +87,11 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.singer
-  position fixed
-  top:88px
-  bottom:0
-  width:100%
+.singer 
+  position: fixed
+  top: 88px
+  bottom: 0
+  width: 100%
+
 </style>
 
