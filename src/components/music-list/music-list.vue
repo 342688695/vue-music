@@ -6,17 +6,17 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <div class="play" ref="playBtn">
+        <div class="play" ref="playBtn" v-show="songs.length>0" @click="random">
           <i class="icon-play"></i>
-          <span class="text" v-show="songs.length>0">随机播放全部</span>
+          <span class="text">随机播放全部</span>
         </div>
       </div>
       <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="layer"></div>
-    <scroll @scroll="scroll" :data="songs" :probe-type="probeType" :listen-scroll="listenScroll" class="list" ref="list">
+    <scroll @scroll="scroll" :data="songs" :probeType="probeType" :listenScroll="listenScroll" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem"></song-list>
+        <song-list :songs="songs" @select="selectItem" :ranked="ranked"></song-list>
       </div>
       <div class="loading-content" v-show="!songs.length">
         <loading></loading>
@@ -31,10 +31,12 @@ import Loading from 'base/loading/loading'
 import SongList from 'base/song-list/song-list'
 import {prefixStyle} from 'common/js/dom'
 import {mapActions} from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 const RESERVED_HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 export default {
+  mixins: [playlistMixin],
   props: {
     bgImage: {
       type: String,
@@ -47,6 +49,10 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    ranked: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -67,7 +73,6 @@ export default {
     this.imageHeight = this.$refs.bgImage.clientHeight
     this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
     this.$refs.list.$el.style.top = `${this.imageHeight}px`
-    console.log(this.$refs.list.$el)
   },
   watch: {
     scrollY(newY) {
@@ -99,6 +104,16 @@ export default {
     }
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
+    random() {
+      this.randomPlay({
+        list: this.songs
+      })
+    },
     scroll(pos) {
       this.scrollY = pos.y
     },
@@ -112,7 +127,8 @@ export default {
       })
     },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   },
   components: {
